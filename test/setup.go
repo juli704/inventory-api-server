@@ -105,7 +105,7 @@ type TableSetup struct {
 func SetupTest(t *testing.T, tableSetups []TableSetup) func(t *testing.T) {
 
 	// Load ENV file
-	if err := godotenv.Load("../default.env"); err != nil {
+	if err := godotenv.Load("../env/local.env"); err != nil {
 		log.Print("No .env file found")
 	}
 

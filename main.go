@@ -9,9 +9,11 @@
 package main
 
 import (
+	"errors"
 	sw "inventory-api-server/go"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 )
@@ -56,8 +58,13 @@ func createTables() {
 // Invoked before main
 func init() {
 
+	// Return if the .env doesn't exist
+	if _, err := os.Stat("../local.env"); errors.Is(err, os.ErrNotExist) {
+		return
+	}
+
 	// Load ENV file
-	if err := godotenv.Load("default.env"); err != nil {
+	if err := godotenv.Load("../local.env"); err != nil {
 		log.Print("No .env file found")
 	}
 
@@ -68,8 +75,7 @@ func main() {
 	createTables()
 
 	log.Printf("Server started")
-
 	router := sw.NewRouter()
-
 	log.Fatal(http.ListenAndServe(":8080", router))
+
 }
