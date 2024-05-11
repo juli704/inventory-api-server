@@ -63,19 +63,19 @@ func clearTable(t *testing.T, table string) {
 
 	db, err := sql.Open("postgres", sw.GetDbmsAddress())
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 
 	defer db.Close()
 
 	_, err = db.Exec("ALTER SEQUENCE " + table + "_id_seq RESTART WITH 1")
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 
 }
 
-func populateTable(t *testing.T, table string, postBodies []string) {
+func PopulateTable(t *testing.T, table string, postBodies []string) {
 
 	for _, body := range postBodies {
 
@@ -97,35 +97,38 @@ func populateTable(t *testing.T, table string, postBodies []string) {
 
 }
 
-func SetupEmptyTest(t *testing.T, table string) func(t *testing.T) {
-
-	// Load ENV file
-	if err := godotenv.Load("../default.env"); err != nil {
-		log.Print("No .env file found")
-	}
-
-	clearTable(t, table)
-
-	// Return tear down procedure
-	return func(t *testing.T) {
-		clearTable(t, table)
-	}
-
+type TableSetup struct {
+	table      string
+	postBodies []string
 }
 
-func SetupPopulatedTest(t *testing.T, table string, postBodies []string) func(t *testing.T) {
+func SetupTest(t *testing.T, tableSetups []TableSetup) func(t *testing.T) {
 
 	// Load ENV file
 	if err := godotenv.Load("../default.env"); err != nil {
 		log.Print("No .env file found")
 	}
 
-	clearTable(t, table)
-	populateTable(t, table, postBodies)
+	// Clear all tables that were set up.
+	// In reverse because of foreign key constraints
+	for i := len(tableSetups) - 1; i >= 0; i-- {
+		clearTable(t, tableSetups[i].table)
+	}
+
+	// Populate all tables
+	for _, setup := range tableSetups {
+		PopulateTable(t, setup.table, setup.postBodies)
+	}
 
 	// Return tear down procedure
 	return func(t *testing.T) {
-		clearTable(t, table)
+
+		// Clear all tables that were set up.
+		// In reverse because of foreign key constraints
+		for i := len(tableSetups) - 1; i >= 0; i-- {
+			clearTable(t, tableSetups[i].table)
+		}
+
 	}
 
 }

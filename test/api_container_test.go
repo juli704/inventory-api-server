@@ -1,13 +1,13 @@
 package test
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestGetContainers(t *testing.T) {
 
-	tearDownTest := SetupPopulatedTest(t, "container", []string{``, ``, ``})
-	defer tearDownTest(t)
+	tearDown := SetupTest(t, []TableSetup{
+		{"container", []string{``, ``, ``}},
+	})
+	defer tearDown(t)
 
 	TestGetAll(t, "container", []string{
 		`{"id":1,"itemCount":0}`,
@@ -19,8 +19,10 @@ func TestGetContainers(t *testing.T) {
 
 func TestPostContainer(t *testing.T) {
 
-	tearDownTest := SetupEmptyTest(t, "container")
-	defer tearDownTest(t)
+	tearDown := SetupTest(t, []TableSetup{
+		{"container", []string{}},
+	})
+	defer tearDown(t)
 
 	TestPost(t, "container", []PostTestCase{
 		{``, `{"containerId":1}`, 200},
@@ -32,8 +34,10 @@ func TestPostContainer(t *testing.T) {
 
 func TestGetContainerById(t *testing.T) {
 
-	tearDownTest := SetupPopulatedTest(t, "container", []string{``, ``, ``})
-	defer tearDownTest(t)
+	tearDown := SetupTest(t, []TableSetup{
+		{"container", []string{``, ``, ``}},
+	})
+	defer tearDown(t)
 
 	TestGetById(t, "container", 2, `{"id":2,"itemCount":0}`)
 
@@ -41,8 +45,10 @@ func TestGetContainerById(t *testing.T) {
 
 func TestPutContainerById(t *testing.T) {
 
-	tearDownTest := SetupPopulatedTest(t, "container", []string{``, ``, ``})
-	defer tearDownTest(t)
+	tearDown := SetupTest(t, []TableSetup{
+		{"container", []string{``, ``, ``}},
+	})
+	defer tearDown(t)
 
 	TestPutById(t, "container", 1, `{"itemCount":0}`)
 
@@ -50,8 +56,10 @@ func TestPutContainerById(t *testing.T) {
 
 func TestDeleteContainerById(t *testing.T) {
 
-	tearDownTest := SetupPopulatedTest(t, "container", []string{``, ``, ``})
-	defer tearDownTest(t)
+	tearDown := SetupTest(t, []TableSetup{
+		{"container", []string{``, ``, ``}},
+	})
+	defer tearDown(t)
 
 	TestDeleteById(t, "container", 1)
 
