@@ -22,7 +22,7 @@ paths:
       tags:
       - item
       summary: Get all items from the inventory
-      operationId: getItem
+      operationId: getItems
       responses:
         "200":
           description: Operation successful
@@ -34,7 +34,7 @@ paths:
       tags:
       - item
       summary: Add a new item to the inventory
-      operationId: addItem
+      operationId: postItem
       requestBody:
         content:
           application/json:
@@ -108,7 +108,7 @@ paths:
       tags:
       - item
       summary: Delete an item
-      operationId: deleteItem
+      operationId: deleteItemById
       parameters:
       - name: id
         in: path
@@ -149,7 +149,7 @@ paths:
       tags:
       - category
       summary: Create a new item category
-      operationId: addCategory
+      operationId: postCategory
       requestBody:
         content:
           application/json:
@@ -223,7 +223,7 @@ paths:
       tags:
       - category
       summary: Delete a category
-      operationId: deleteCategory
+      operationId: deleteCategoryById
       parameters:
       - name: id
         in: path
@@ -264,7 +264,7 @@ paths:
       tags:
       - container
       summary: Register a new item container
-      operationId: addContainer
+      operationId: postContainer
       responses:
         "200":
           description: Operation successful
@@ -329,7 +329,7 @@ paths:
       tags:
       - container
       summary: Delete a container
-      operationId: deleteContainer
+      operationId: deleteContainerById
       parameters:
       - name: id
         in: path

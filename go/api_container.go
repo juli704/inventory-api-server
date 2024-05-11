@@ -9,30 +9,104 @@
 package swagger
 
 import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 )
 
-func AddContainer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func GetContainers(w http.ResponseWriter, r *http.Request) {
+
+	GetAll(w, r, "container", func(row *sql.Rows) map[string]interface{} {
+
+		var id int
+		var itemCount int
+
+		err := row.Scan(&id, &itemCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return map[string]interface{}{
+			"id":        id,
+			"itemCount": itemCount,
+		}
+
+	})
+
 }
 
-func DeleteContainer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func PostContainer(w http.ResponseWriter, r *http.Request) {
+
+	Post(w, r, func(db *sql.DB) string {
+
+		// Add record //
+
+		var id int
+		err := db.QueryRow(fmt.Sprintf(`INSERT INTO container (item_count) VALUES ('%v') RETURNING id`, 0)).Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return fmt.Sprintf(`{"containerId":%v}`, id)
+
+	})
+
 }
 
 func GetContainerById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-}
 
-func GetContainers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	GetById(w, r, "container", func(row *sql.Row) map[string]interface{} {
+
+		var id int
+		var itemCount int
+
+		err := row.Scan(&id, &itemCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return map[string]interface{}{
+			"id":        id,
+			"itemCount": itemCount,
+		}
+
+	})
+
 }
 
 func PutContainerById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+
+	PutById(w, r, "container", func(db *sql.DB, id string) {
+
+		// Parse request body //
+
+		var containerData ContainerData
+
+		err := json.NewDecoder(r.Body).Decode(&containerData)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+
+		// Update record //
+
+		query := fmt.Sprintf(
+			"UPDATE container SET item_count='%v' WHERE id=%v",
+			containerData.ItemCount, id)
+
+		_, err = db.Exec(query)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	})
+
+}
+
+func DeleteContainerById(w http.ResponseWriter, r *http.Request) {
+
+	DeleteById(w, r, "container")
+
 }

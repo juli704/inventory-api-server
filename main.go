@@ -9,12 +9,64 @@
 package main
 
 import (
+	sw "inventory-api-server/go"
 	"log"
 	"net/http"
-	sw "inventory-api-server/go"
+
+	"github.com/joho/godotenv"
 )
 
+func createTables() {
+
+	db := sw.OpenDBConnection()
+	defer db.Close()
+
+	queries := []string{
+
+		`CREATE TABLE IF NOT EXISTS category (
+			id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+			name char(64) NOT NULL
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS container (
+			id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+			item_count int NOT NULL
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS item (
+			id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+			name char(256),
+			description char(256),
+			category_id int references category(id),
+			container_id int references container(id)
+		)`,
+	}
+
+	for _, query := range queries {
+
+		_, err := db.Exec(query)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}
+
+}
+
+// Invoked before main
+func init() {
+
+	// Load ENV file
+	if err := godotenv.Load("default.env"); err != nil {
+		log.Print("No .env file found")
+	}
+
+}
+
 func main() {
+
+	createTables()
+
 	log.Printf("Server started")
 
 	router := sw.NewRouter()

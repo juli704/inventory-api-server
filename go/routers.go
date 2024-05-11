@@ -55,17 +55,17 @@ var routes = Routes{
 	},
 
 	Route{
-		"AddCategory",
+		"PostCategory",
 		strings.ToUpper("Post"),
 		"/category",
-		AddCategory,
+		PostCategory,
 	},
 
 	Route{
-		"DeleteCategory",
+		"DeleteCategoryById",
 		strings.ToUpper("Delete"),
 		"/category/{id}",
-		DeleteCategory,
+		DeleteCategoryById,
 	},
 
 	Route{
@@ -90,17 +90,17 @@ var routes = Routes{
 	},
 
 	Route{
-		"AddContainer",
+		"PostContainer",
 		strings.ToUpper("Post"),
 		"/container",
-		AddContainer,
+		PostContainer,
 	},
 
 	Route{
-		"DeleteContainer",
+		"DeleteContainerById",
 		strings.ToUpper("Delete"),
 		"/container/{id}",
-		DeleteContainer,
+		DeleteContainerById,
 	},
 
 	Route{
@@ -125,24 +125,24 @@ var routes = Routes{
 	},
 
 	Route{
-		"AddItem",
+		"PostItem",
 		strings.ToUpper("Post"),
 		"/item",
-		AddItem,
+		PostItem,
 	},
 
 	Route{
-		"DeleteItem",
+		"DeleteItemById",
 		strings.ToUpper("Delete"),
 		"/item/{id}",
-		DeleteItem,
+		DeleteItemById,
 	},
 
 	Route{
-		"GetItem",
+		"GetItems",
 		strings.ToUpper("Get"),
 		"/item",
-		GetItem,
+		GetItems,
 	},
 
 	Route{

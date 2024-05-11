@@ -9,30 +9,138 @@
 package swagger
 
 import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"strings"
 )
 
-func AddItem(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+func GetItems(w http.ResponseWriter, r *http.Request) {
+
+	GetAll(w, r, "item", func(row *sql.Rows) map[string]interface{} {
+
+		var id int
+		var name string
+		var description string
+		var categoryId int
+		var containerId int
+
+		err := row.Scan(&id, &name, &description, &categoryId, &containerId)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		name = strings.TrimSpace(string(name))
+		description = strings.TrimSpace(string(description))
+
+		return map[string]interface{}{
+			"id":          id,
+			"name":        name,
+			"description": description,
+			"categoryId":  categoryId,
+			"containerId": containerId,
+		}
+
+	})
+
 }
 
-func DeleteItem(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-}
+func PostItem(w http.ResponseWriter, r *http.Request) {
 
-func GetItem(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	Post(w, r, func(db *sql.DB) string {
+
+		// Parse request body //
+
+		var itemData ItemData
+		err := json.NewDecoder(r.Body).Decode(&itemData)
+		if err != nil {
+			http.Error(w, "", 400)
+			return ``
+		}
+
+		// Add record //
+
+		var id int
+		err = db.QueryRow(fmt.Sprintf(`INSERT INTO item (name, description, category_id, container_id) VALUES ('%s', '%s', %v, %v) RETURNING id`,
+			itemData.Name, itemData.Description, itemData.CategoryId, itemData.ContainerId)).Scan(&id)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return fmt.Sprintf(`{"itemId":%v}`, id)
+
+	})
+
 }
 
 func GetItemById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+
+	GetById(w, r, "item", func(row *sql.Row) map[string]interface{} {
+
+		var id int
+		var name string
+		var description string
+		var categoryId int
+		var containerId int
+
+		err := row.Scan(&id, &name, &description, &categoryId, &containerId)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		name = strings.TrimSpace(string(name))
+		description = strings.TrimSpace(string(description))
+
+		return map[string]interface{}{
+			"id":          id,
+			"name":        name,
+			"description": description,
+			"categoryId":  categoryId,
+			"containerId": containerId,
+		}
+
+	})
+
 }
 
 func PutItemById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+
+	PutById(w, r, "item", func(db *sql.DB, id string) {
+
+		// Parse request body //
+
+		var itemData ItemData
+
+		err := json.NewDecoder(r.Body).Decode(&itemData)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+
+		// Update record //
+
+		query := fmt.Sprintf(
+			`UPDATE item SET name='%s', description='%s', category_id='%v', container_id='%v' WHERE id=%v`,
+			itemData.Name,
+			itemData.Description,
+			itemData.CategoryId,
+			itemData.ContainerId,
+			id,
+		)
+
+		_, err = db.Exec(query)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	})
+
+}
+
+func DeleteItemById(w http.ResponseWriter, r *http.Request) {
+
+	DeleteById(w, r, "item")
+
 }
