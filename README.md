@@ -1,6 +1,6 @@
 # Inventory API Server
 
-A REST API for interacting with an inventory tracking DBMS
+A practice REST API for interacting with an inventory tracking DBMS.
 
 # Getting Started
 
@@ -16,3 +16,11 @@ A REST API for interacting with an inventory tracking DBMS
     - Escape chars
 - Authentication
     - API keys / Bearer
+
+# Tables
+
+<img src="assets/erm.png" width="962" />
+
+# Endpoints
+
+![Endpoint Documentation](assets/swagger-editor.png)
