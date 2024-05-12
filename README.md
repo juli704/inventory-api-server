@@ -1,3 +1,5 @@
+[![build](https://github.com/juli704/inventory-api-server/actions/workflows/build.yml/badge.svg)](https://github.com/juli704/inventory-api-server/actions/workflows/build.yml)
+
 # Inventory API Server
 
 A practice REST API for interacting with an inventory tracking DBMS.
